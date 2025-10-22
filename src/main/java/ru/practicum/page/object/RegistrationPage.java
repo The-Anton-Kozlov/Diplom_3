@@ -1,5 +1,6 @@
-package ru.practicum.pageObject;
+package ru.practicum.page.object;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -7,10 +8,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
 public class RegistrationPage {
-    WebDriver webDriver;
 
-    public RegistrationPage(WebDriver webDriver) {
-        this.webDriver = webDriver;
+    private WebDriver driver;
+
+    public RegistrationPage(WebDriver driver) {
+        this.driver = driver;
     }
 
     private final By registerFormHeading = By.xpath(".//*[text()='Регистрация']");
@@ -21,21 +23,28 @@ public class RegistrationPage {
     private final By passwordFieldError = By.xpath(".//fieldset[3]//p");
     private final By alreadyRegisteredLink = By.xpath(".//*[text()='Уже зарегистрированы?']/a");
 
-    public void waitForPageLoad(){
-        new WebDriverWait(webDriver, Duration.ofSeconds(5)).until(ExpectedConditions.visibilityOfElementLocated(registerFormHeading));
-    }
-    public void fillInRegistrationForm(String name, String email, String password){
-        webDriver.findElement(nameInputField).sendKeys(name);
-        webDriver.findElement(emailInputField).sendKeys(email);
-        webDriver.findElement(passwordInputField).sendKeys(password);
-        webDriver.findElement(registerButton).click();
+
+    @Step("Ожидание отображения заголовка 'Регистрация'")
+    public void waitForPageLoad() {
+        new WebDriverWait(driver, Duration.ofSeconds(5))
+                .until(ExpectedConditions.visibilityOfElementLocated(registerFormHeading));
     }
 
+    @Step("Заполнение регистрационной формы именем '{name}', емейлом '{email}' и паролем '{password}'")
+    public void fillInRegistrationForm(String name, String email, String password) {
+        driver.findElement(nameInputField).sendKeys(name);
+        driver.findElement(emailInputField).sendKeys(email);
+        driver.findElement(passwordInputField).sendKeys(password);
+        driver.findElement(registerButton).click();
+    }
+
+    @Step("Получение текста ошибки поля пароля")
     public String getPasswordFieldErrorText() {
-        return webDriver.findElement(passwordFieldError).getText();
+        return driver.findElement(passwordFieldError).getText();
     }
 
-    public void clickAlreadyRegisteredLink(){
-        webDriver.findElement(alreadyRegisteredLink).click();
+    @Step("Нажатие на ссылку 'Уже зарегистрирован?'")
+    public void clickAlreadyRegisteredLink() {
+        driver.findElement(alreadyRegisteredLink).click();
     }
 }
